@@ -15,7 +15,7 @@ variable "prefix" {
 }
 
 variable "gce_ssh_pub_key_file" {
-  default = "C:/Users/karigiki.CORPDOM/.ssh/ssh_pub_key.pub"
+  default = "/home/kiran/.ssh/authorized_keys"
 }
 
 variable "gce_ssh_user" {
