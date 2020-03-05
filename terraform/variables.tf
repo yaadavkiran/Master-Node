@@ -15,14 +15,19 @@ variable "prefix" {
 }
 
 variable "gce_ssh_pub_key_file" {
-  default = "/home/kiran/.ssh/authorized_keys"
+  default = "C:/Users/karigiki.CORPDOM/.ssh/ssh_pub_key.pub"
 }
 
 variable "gce_ssh_user" {
   default = "kiran"
 }
 
-variable "vm_name" {
+variable "vm_master" {
     type = "list"
-  default = ["master","workernode1","workernode2"]
+  default = ["master"]
+}
+
+variable "vm_worker" {
+    type = "list"
+  default = ["worker1","worker2"]
 }
