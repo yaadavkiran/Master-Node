@@ -12,6 +12,6 @@
     - debug:
         var: k8_output.stdout_lines[-2],k8_output.stdout_lines[-1] 
         
-    - local_action: lineinfile line={{ k8_output.stdout_lines[-2],k8_output.stdout_lines[-1] }} path=/ansible/output       
+    - local_action: lineinfile line={{ k8_output.stdout_lines[-2],k8_output.stdout_lines[-1] }} path=/project/Master-Node/ansible/output     
         
 
