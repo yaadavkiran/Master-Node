@@ -1,0 +1,17 @@
+---
+- hosts: Master
+  vars:
+    apim_component_name: ps
+  become: 'yes'
+  tasks:
+    - name: Install k8s
+      command: "sudo kubeadm init --pod-network-cidr=10.240.0.0/16 --ignore-preflight-errors=all"
+      become: yes
+      register: k8_output
+      
+    - debug:
+        var: k8_output.stdout_lines[-2],k8_output.stdout_lines[-1] 
+        
+    - local_action: lineinfile line={{ k8_output.stdout_lines[-2],k8_output.stdout_lines[-1] }} path=/ansible/output       
+        
+

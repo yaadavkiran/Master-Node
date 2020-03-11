@@ -1,0 +1,80 @@
+---
+- hosts: all
+  vars:
+    apim_component_name: ps
+  become: 'yes'
+  tasks:
+  
+    - name: Commands
+      command: "{{item}}"
+      with_items:
+          - hostnamectl
+          - systemctl stop firewalld
+          - systemctl disable firewalld
+          - swapoff -a
+          - sed -i.bak -r 's/(.+ swap .+)/#\1/' /etc/fstab
+          - setenforce 0
+          - sed -i 's/enforcing/disabled/g' /etc/selinux/config
+      register: cmd
+    - debug:
+        var: cmd
+        
+    - copy:
+        content: "[kubernetes]\nname=Kubernetes\nbaseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64\nenabled=1\ngpgcheck=1\nrepo_gpgcheck=1\ngpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg\nexclude=kube*"
+        dest: "/etc/yum.repos.d/kubernetes.repo"
+        backup: no
+        owner: root
+        group: root
+        mode: 0644
+        
+    - name: install packages
+      yum:
+        name: 
+          - python36
+          - docker
+          - kubelet
+          - kubeadm
+          - kubectl
+        state: present
+        disable_excludes: kubernetes
+
+      register: output
+    - debug:
+        var: output    
+
+    - name: Commands
+      command: "{{item}}"
+      with_items:
+          - systemctl enable docker
+          - systemctl start docker
+          - systemctl enable kubelet
+          - systemctl start kubelet
+      become: yes    
+      register: cmdout
+
+    - debug:
+        var: cmdout
+    
+    - copy: 
+        content: "net.bridge.bridge-nf-call-ip6tables = 1\nnet.bridge.bridge-nf-call-iptables = 1"                     
+        dest: "/etc/sysctl.d/k8s.conf"
+        backup: no
+        owner: root
+        group: root
+        mode: 0644    
+        
+    - name: Commands
+      command: "{{item}}"
+      with_items:
+          - sysctl net.bridge.bridge-nf-call-iptables=1
+          - sysctl net.ipv4.ip_forward=1
+          - sysctl --system
+          - echo "1" > /proc/sys/net/ipv4/ip_forward
+          - systemctl daemon-reload
+          - systemctl restart kubelet
+      become: yes    
+      register: cmd
+    - debug:
+        var: cmd 
+
+            
