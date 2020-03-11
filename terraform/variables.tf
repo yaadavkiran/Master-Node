@@ -15,7 +15,7 @@ variable "prefix" {
 }
 
 variable "gce_ssh_pub_key_file" {
-  default = "/home/${gce_ssh_user}/.ssh/rsa_pub"
+  default = "/home/${var.gce_ssh_user}/.ssh/rsa_pub"
 }
 
 variable "gce_ssh_user" {
